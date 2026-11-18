@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "화면은 로컬 API(127.0.0.1)만 부르므로 Tauri 기능 권한은 기본값만 둔다.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

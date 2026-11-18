@@ -2,3 +2,6 @@
 __pycache__/
 *.pyc
 data/index.sqlite
+app/node_modules/
+app/src-tauri/target/
+app/src-tauri/gen/

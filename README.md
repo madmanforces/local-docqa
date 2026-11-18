@@ -2,6 +2,10 @@
 
 인터넷도 GPU도 없는 사무실 PC에서, 규정 문서(HWPX)를 넣으면 **근거 조항을 인용해 답하고, 근거가 없으면 «모른다»고 답하는** 로컬 AI입니다.
 
+![데모: 질문하면 근거 조문을 칠해 보여 주고, 규정에 없는 질문에는 «모른다»고 답한다](docs/demo.gif)
+
+**한 줄 결과** — 공개 규정 8개·100문항에서, GPU를 끈 PC의 4B 모델이 **정확도 87.1%**(GPU 9B 모델 89.4%), **근거 없는 질문 15개 모두 «모른다»**, 평균 **6.9초**로 답했습니다. GPU가 없으면 잃는 것은 정확도가 아니라 속도였습니다.
+
 ## 1. 문제
 
 - 공공기관·방산 같은 곳의 업무 PC는 **폐쇄망**이라 ChatGPT 같은 클라우드 AI를 쓸 수 없고, 대개 **GPU도 없습니다**.
@@ -140,15 +144,43 @@ uv run python -m evaluation.run_eval --profile cpu
 
 자료와 모델을 받아 둔 뒤에는 인터넷이 필요 없습니다. Ollama는 `127.0.0.1`(이 PC 안)으로만 호출합니다.
 
+### 화면 (데스크톱 앱)
+
+```
+Tauri 창 (ui/index.html) ──HTTP 127.0.0.1:8765──▶ 파이썬 엔진 (docqa serve) ──▶ Ollama
+```
+
+- 창은 [Tauri 2](https://tauri.app)로 만들었습니다. 창을 열면 파이썬 엔진을 뒤에서 띄우고, 닫으면 끕니다(`app/src-tauri/src/main.rs`).
+- 화면은 HTML 한 파일이라 브라우저로도 똑같이 쓸 수 있습니다: `uv run docqa serve` 후 `http://127.0.0.1:8765`.
+- 답 아래에 근거 조문 원문을 펼쳐 보이고, 답에 나온 숫자·낱말을 원문에서 칠합니다. 실행 조건(GPU 9B / CPU만 4B)을 고를 수 있습니다.
+- 엔진 API는 파이썬 표준 라이브러리(`http.server`)만 써서, 폐쇄망에 따로 설치할 것이 없습니다.
+
+```bash
+uv run docqa serve                         # 브라우저로 쓰기
+cd app && npm install && npm run build     # 데스크톱 앱 빌드 → app/src-tauri/target/release/docqa-app.exe
+uv run python scripts/record_demo.py       # 데모 GIF 녹화 → docs/demo.gif
+```
+
+앱 빌드에는 Rust와 Node.js가 필요합니다. 만든 exe는 이 프로젝트 폴더 안(또는 `DOCQA_ROOT` 환경 변수가 가리키는 곳)의 `.venv`로 엔진을 띄웁니다.
+
 ## 폴더 구조
 
 ```
-docqa/        엔진: hwpx.py(읽기) structure.py(조 나누기) store.py(SQLite 검색) engine.py(답변) cli.py
+docqa/        엔진: hwpx.py(읽기) structure.py(조 나누기) store.py(SQLite 검색) engine.py(답변) server.py(화면용 API) cli.py
+ui/           화면: index.html (앱과 브라우저가 같이 씀)
+app/          데스크톱 앱(Tauri): src-tauri/src/main.rs
 evaluation/   평가: build_set.py(세트 만들기·검사) verify_set.py(자동 검증) review_sheet.py(사람 확인 시트) run_eval.py(측정) qa_set.jsonl runs/(결과)
+scripts/      record_demo.py(데모 GIF 녹화)
 data/raw/     공개 규정 HWPX
 ```
 
-## 다음 계획 (2주차)
+## 앞으로 해 볼 것
 
-- Tauri로 데스크톱 화면: 문서 넣기 → 질문 → 답 옆에 근거 조문 강조 표시
-- 데모 GIF, GitHub 공개
+- 검색 개선: 틀린 14건 중 6건이 검색 실패다. 재순위 모델(reranker)을 붙이거나 긴 조문을 나눌 때 조 제목을 조각마다 붙인다. 평가 세트에 맞춰 고치지 않도록, 새 문항으로 따로 잰다.
+- 화면에서 HWPX를 끌어다 놓아 바로 색인에 넣기.
+- 실제 사무용 PC(GPU 없음, RAM 16GB)에서 다시 재기. Ollama 프롬프트 캐시 크기를 줄였을 때의 메모리.
+- 핵심어 채점을 보완할 사람 채점 또는 LLM 채점.
+
+## 라이선스
+
+코드는 MIT. `data/raw/`의 규정 원문은 각 기관이 공개한 자료로, [국가법령정보센터](https://www.law.go.kr)에서 받았습니다.

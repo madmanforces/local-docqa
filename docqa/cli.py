@@ -1,6 +1,7 @@
 """명령줄 사용법:
   uv run docqa ingest                 # data/raw/*.hwpx → data/index.sqlite
   uv run docqa ask "질문" [--profile cpu]
+  uv run docqa serve [--port 8765]    # 화면(UI)용 로컬 API
 """
 from __future__ import annotations
 
@@ -61,10 +62,16 @@ def main(argv=None) -> None:
     q.add_argument("question")
     q.add_argument("--profile", default=config.DEFAULT_PROFILE, choices=list(config.PROFILES))
     q.add_argument("--json", action="store_true", help="결과를 JSON으로 출력")
+    s = sub.add_parser("serve", help="화면(UI)용 로컬 API를 연다 (127.0.0.1)")
+    s.add_argument("--port", type=int, default=8765)
+    s.add_argument("--parent-pid", type=int, help="이 프로세스가 끝나면 엔진도 끈다 (데스크톱 앱이 넘김)")
     args = ap.parse_args(argv)
 
     if args.cmd == "ingest":
         ingest(args.raw, args.db, args.embed_model)
+    elif args.cmd == "serve":
+        from .server import serve
+        serve(args.port, args.parent_pid)
     else:
         from .engine import Engine
         eng = Engine(args.profile)
