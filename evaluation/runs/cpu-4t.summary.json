@@ -1,0 +1,29 @@
+{
+  "profile": "cpu-4t",
+  "model": "qwen3.5:4b",
+  "options": {
+    "num_ctx": 4096,
+    "temperature": 0,
+    "num_gpu": 0,
+    "num_thread": 4
+  },
+  "embed_model": "bge-m3",
+  "n_answerable": 85,
+  "n_unanswerable": 15,
+  "accuracy": 87.1,
+  "citation_match": 88.2,
+  "unknown_correct": 100.0,
+  "false_refusal": 8.2,
+  "retrieval_recall@5": 92.9,
+  "latency_mean_s": 8.87,
+  "latency_p50_s": 7.86,
+  "latency_p95_s": 15.81,
+  "peak_ram_gb": 12.59,
+  "peak_vram_gb": 4.38,
+  "peak_ram_incl_load_gb": 12.59,
+  "peak_vram_incl_load_gb": 4.38,
+  "vram_baseline_gb": 4.36,
+  "warmup_s": 10.8,
+  "wall_s": 886.7,
+  "date": "2026-11-17 23:33"
+}

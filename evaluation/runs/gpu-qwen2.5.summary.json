@@ -1,0 +1,27 @@
+{
+  "profile": "gpu-qwen2.5",
+  "model": "qwen2.5:7b",
+  "options": {
+    "num_ctx": 4096,
+    "temperature": 0
+  },
+  "embed_model": "bge-m3",
+  "n_answerable": 85,
+  "n_unanswerable": 15,
+  "accuracy": 87.1,
+  "citation_match": 72.9,
+  "unknown_correct": 100.0,
+  "false_refusal": 9.4,
+  "retrieval_recall@5": 92.9,
+  "latency_mean_s": 0.57,
+  "latency_p50_s": 0.55,
+  "latency_p95_s": 0.95,
+  "peak_ram_gb": 8.38,
+  "peak_vram_gb": 9.99,
+  "peak_ram_incl_load_gb": 8.38,
+  "peak_vram_incl_load_gb": 9.99,
+  "vram_baseline_gb": 4.37,
+  "warmup_s": 4.7,
+  "wall_s": 57.2,
+  "date": "2026-11-17 23:06"
+}
